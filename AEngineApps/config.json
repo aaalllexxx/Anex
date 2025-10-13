@@ -1,0 +1,5 @@
+{
+    "view": "app",
+    "screen_path": "screens",
+    "routers": "auto"
+}
