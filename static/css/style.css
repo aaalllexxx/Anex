@@ -2,19 +2,27 @@
 
 
 :root {
-    --index: calc(1vw + 1vh)
+    --index: calc(1vw + 1vh);
+    --main-theme-color: rgb(28, 39, 56); 
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Montserrat", sans-serif;
 }
 
 body {
-    background-color: rgb(28, 39, 56);
     overflow: hidden;
 }
 
 .container {
     display: flex;
+    background-color: var(--main-theme-color);
     align-items: center;
     justify-content: center;
-    min-height: 95vh;
+    min-height: 100vh;
     flex-direction: column;
     color: rgb(226, 226, 226);
     font-style: italic;
@@ -28,7 +36,7 @@ body {
     position: absolute;
     border-radius: 50%;
     box-shadow: 0 0 5px hsl(0, 0%, 100%);
-    transition: filter .05s;
+    transition: filter .05s, background .3s;
 }
 
 #circ {

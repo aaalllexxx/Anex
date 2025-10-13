@@ -1,15 +1,22 @@
 let radius = 120,
-    particle = 8,
-    offset = 2,
+    particle = 11,
+    offset = 1,
     boxShadow = 20,
-    depth = .1,
+    depth = 0.1,
     dir = 1,
     breath_time = 5,
-    amplitude = 7;
+    amplitude = 10,
+    decreaser = 0.07,
+    shadowCol = "#ffffff",
+    onactive = "#48ff6dff";
+
+let scaled = false;
+let recording = false;
 
 let circ = document.querySelector("#circ");
 circ.style.width = `${radius*2}px`;
 circ.style.height = `${radius*2}px`;
+
 
 for (let y = -radius; y <= radius; y += particle + offset) {
     for (let x = -radius; x <= radius; x += particle + offset) {
@@ -19,9 +26,9 @@ for (let y = -radius; y <= radius; y += particle + offset) {
             div.style.left = `${x + radius - particle/2}px`;
             div.style.top = `${y + radius - particle/2}px`;
             
-            let delta = Math.abs(Math.sqrt(x ** 2 + y ** 2));
-            div.style.width = `${particle - delta * 0.04}px`;
-            div.style.height = `${particle - delta * 0.04}px`;
+            let delta = Math.sqrt(x ** 2 + y ** 2);
+            div.style.width = `${particle - delta * decreaser}px`;
+            div.style.height = `${particle - delta * decreaser}px`;
             
             let gs = 255 - delta;
             div.style.backgroundColor = `rgb(${gs},${gs},${gs})`;
@@ -94,10 +101,13 @@ async function start() {
             
             // Обновляем частицы при получении нового уровня
             let localdir = 1;
-            for (let particle of particles) {
-                particle.style.transform = `translateY(${Math.sin(timer) + localdir * level * 3}px) rotate(${timer * .05}rad)`;
-                localdir = -localdir;
+            if (recording) {
+                for (let particle of particles) {
+                    particle.style.transform = `translateY(${Math.sin(timer) + localdir * level * 3}px) rotate(${timer * .05}rad)`;
+                    localdir = -localdir;
+                }
             }
+            
         }
     };
 }
@@ -107,7 +117,7 @@ start().catch(console.error);
 
 // Анимация свечения
 setInterval(() => {
-    if (boxShadow >= 25 || boxShadow <= 15) {
+    if (boxShadow >= 30 || boxShadow <= 15) {
         dir = -dir;
     }
     
@@ -115,15 +125,20 @@ setInterval(() => {
     depth += 0.00001 * dir;
     
     for (let part of document.querySelectorAll(".particle")) {
-        if (boxShadow <= 25 || boxShadow >= 15) {
-            part.style.boxShadow = `0 0 ${boxShadow}px #ffffff`;
+        if (boxShadow <= 30 || boxShadow >= 15) {
+            part.style.boxShadow = `0 0 ${boxShadow}px ${shadowCol}`;
         }
     }
 }, 170);
 
 // Основная анимация контейнера
 setInterval(() => {
-    circ.style.transform = `translateY(${amplitude * Math.sin(timer)}px) rotate(${timer*.05}rad)`;
+    if (!scaled) {
+        circ.style.transform = `translateY(${amplitude * Math.sin(timer)}px) rotate(${timer*.05}rad)`;
+    } else {
+        circ.style.transform = `translateY(${amplitude * Math.sin(timer)}px) rotate(${timer*.05}rad) scale(1.05)`;
+        circ.style.cursor = "pointer"
+    }
     timer += .2;
 }, 100);
 
@@ -145,4 +160,30 @@ function type(text, element, speed) {
 let label = document.querySelector(".label");
 if (label) {
     type("Задайте вопрос...", label, 90);
+}
+
+circ.onmouseover = () => {
+    scaled = true;
+}
+
+circ.onmouseleave = () => {
+    scaled = false;
+}
+
+circ.onclick = () => {
+    recording = !recording
+    let particles = document.querySelectorAll(".particle");
+    if (recording) {
+        for (let particle of particles) {
+            particle.style.backgroundColor = `${onactive}`
+        }
+    } else {
+        let particles = document.querySelectorAll(".particle");
+        for (let part of particles) {
+            let delta = Math.sqrt((Number.parseInt(part.style.left) + particle/2 - radius) ** 2 + (Number.parseInt(part.style.top) + particle/2 - radius) ** 2);
+            let gs = 255 - delta;
+            part.style.backgroundColor = `rgb(${gs},${gs},${gs})`;
+        }
+    }
+    shadowCol = recording ? onactive : "#ffffff";
 }
