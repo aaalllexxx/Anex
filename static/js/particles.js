@@ -1,6 +1,6 @@
 let radius = 120,
-    particle = 11,
-    offset = 1,
+    particle = 10,
+    offset = 4,
     boxShadow = 20,
     depth = 0.1,
     dir = 1,
@@ -117,7 +117,7 @@ start().catch(console.error);
 
 // Анимация свечения
 setInterval(() => {
-    if (boxShadow >= 30 || boxShadow <= 15) {
+    if (boxShadow >= 25 || boxShadow <= 10) {
         dir = -dir;
     }
     
@@ -125,7 +125,7 @@ setInterval(() => {
     depth += 0.00001 * dir;
     
     for (let part of document.querySelectorAll(".particle")) {
-        if (boxShadow <= 30 || boxShadow >= 15) {
+        if (boxShadow <= 25 || boxShadow >= 10) {
             part.style.boxShadow = `0 0 ${boxShadow}px ${shadowCol}`;
         }
     }

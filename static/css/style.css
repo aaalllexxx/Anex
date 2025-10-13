@@ -18,6 +18,7 @@ body {
 }
 
 .container {
+    position: relative;
     display: flex;
     background-color: var(--main-theme-color);
     align-items: center;
