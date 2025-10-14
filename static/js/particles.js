@@ -1,6 +1,6 @@
 let radius = 120,
     particle = 10,
-    offset = 4,
+    offset = 2,
     boxShadow = 20,
     depth = 0.1,
     dir = 1,
@@ -12,6 +12,7 @@ let radius = 120,
 
 let scaled = false;
 let recording = false;
+let mic = document.querySelector(".mic");
 
 let circ = document.querySelector("#circ");
 circ.style.width = `${radius*2}px`;
@@ -135,10 +136,12 @@ setInterval(() => {
 setInterval(() => {
     if (!scaled) {
         circ.style.transform = `translateY(${amplitude * Math.sin(timer)}px) rotate(${timer*.05}rad)`;
+
     } else {
         circ.style.transform = `translateY(${amplitude * Math.sin(timer)}px) rotate(${timer*.05}rad) scale(1.05)`;
         circ.style.cursor = "pointer"
     }
+    mic.style.transform = `translate(-50%, -50%) rotate(${-timer*.05}rad)`
     timer += .2;
 }, 100);
 

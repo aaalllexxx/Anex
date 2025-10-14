@@ -59,3 +59,15 @@ body {
     font-style: normal;
     margin-top: 30px;
 }
+
+.mic {
+    position: absolute;
+    width: 50px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    color: white;
+    background-color: rgba(28, 39, 56, 0.7);
+    border-radius: 50%;
+}
