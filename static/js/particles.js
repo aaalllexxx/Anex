@@ -13,10 +13,12 @@ let radius = 120,
 let scaled = false;
 let recording = false;
 let mic = document.querySelector(".mic");
-
+let mic_img = document.querySelector(".mic_img");
 let circ = document.querySelector("#circ");
+let circ_out = document.querySelector(".circ_outer");
 circ.style.width = `${radius*2}px`;
 circ.style.height = `${radius*2}px`;
+mic.style.transform = `translateY(${particle/2}px)`
 
 
 for (let y = -radius; y <= radius; y += particle + offset) {
@@ -24,8 +26,8 @@ for (let y = -radius; y <= radius; y += particle + offset) {
         if (x ** 2 + y ** 2 < radius ** 2) {
             let div = document.createElement("div");
             div.classList.add("particle");
-            div.style.left = `${x + radius - particle/2}px`;
-            div.style.top = `${y + radius - particle/2}px`;
+            div.style.left = `${x + radius}px`;
+            div.style.top = `${y + radius}px`;
             
             let delta = Math.sqrt(x ** 2 + y ** 2);
             div.style.width = `${particle - delta * decreaser}px`;
@@ -135,13 +137,13 @@ setInterval(() => {
 // Основная анимация контейнера
 setInterval(() => {
     if (!scaled) {
-        circ.style.transform = `translateY(${amplitude * Math.sin(timer)}px) rotate(${timer*.05}rad)`;
-
+        circ.style.transform = `rotate(${timer*.05}rad)`;
+        circ_out.style.transform = `translateY(${amplitude * Math.sin(timer)}px)`;
     } else {
-        circ.style.transform = `translateY(${amplitude * Math.sin(timer)}px) rotate(${timer*.05}rad) scale(1.05)`;
-        circ.style.cursor = "pointer"
+        circ.style.transform = `rotate(${timer*.05}rad)`;
+        circ_out.style.cursor = "pointer"
+        circ_out.style.transform = `translateY(${amplitude * Math.sin(timer)}px) scale(1.05)`;
     }
-    mic.style.transform = `translate(-50%, -50%) rotate(${-timer*.05}rad)`
     timer += .2;
 }, 100);
 
@@ -165,28 +167,30 @@ if (label) {
     type("Задайте вопрос...", label, 90);
 }
 
-circ.onmouseover = () => {
+circ_out.onmouseover = () => {
     scaled = true;
 }
 
-circ.onmouseleave = () => {
+circ_out.onmouseleave = () => {
     scaled = false;
 }
 
-circ.onclick = () => {
+circ_out.onclick = () => {
     recording = !recording
     let particles = document.querySelectorAll(".particle");
     if (recording) {
         for (let particle of particles) {
             particle.style.backgroundColor = `${onactive}`
         }
+        mic_img.src = "/static/imgs/micon.png"
     } else {
         let particles = document.querySelectorAll(".particle");
         for (let part of particles) {
-            let delta = Math.sqrt((Number.parseInt(part.style.left) + particle/2 - radius) ** 2 + (Number.parseInt(part.style.top) + particle/2 - radius) ** 2);
+            let delta = Math.sqrt((Number.parseInt(part.style.left) - radius) ** 2 + (Number.parseInt(part.style.top) - radius) ** 2);
             let gs = 255 - delta;
             part.style.backgroundColor = `rgb(${gs},${gs},${gs})`;
         }
+        mic_img.src = "/static/imgs/micoff.png"
     }
     shadowCol = recording ? onactive : "#ffffff";
 }
