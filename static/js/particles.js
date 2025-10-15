@@ -62,16 +62,20 @@ let timer = 0;
 let level = 0;
 let particles = document.querySelectorAll(".particle");
 
-// Текст при запуске
-type("Задайте вопрос...", label, 90);
+// Печатная машинка: состояние
+let tw_target = "";   // последняя целевая строка с сервера
+let tw_shown = "";    // уже отображённое
+let tw_timer = null;
+const TYPE_SPEED_MS = 90;
+
+// Инициализация подсказки при загрузке
+typewriter_set("Задайте вопрос...");
 
 // Поллинг эндпоинта /get_speech
 let pollTimerId = null;
-let backoffFails = 0; // можно использовать для бэкоффа при ошибках сети
+let backoffFails = 0;
 
 async function fetchWithTimeout(url, init = {}, timeoutMs = FETCH_TIMEOUT_MS) {
-  // Используем AbortSignal.timeout, где поддерживается
-  // В большинстве современных браузеров доступно; при отсутствии — fallback
   let useNativeTimeout = typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function";
   if (useNativeTimeout) {
     const res = await fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
@@ -91,44 +95,46 @@ async function fetchWithTimeout(url, init = {}, timeoutMs = FETCH_TIMEOUT_MS) {
 async function pollOnce() {
   try {
     const res = await fetchWithTimeout("/get_speech", { method: "GET", headers: { "accept": "application/json" } }, FETCH_TIMEOUT_MS);
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    // Ожидаем {"text": string, "rms": number, "dbfs": number}
     const { text, rms, dbfs } = data ?? {};
+
     // Уровень для анимации
     if (Number.isFinite(rms)) {
-      // Простейшая нормализация: rms (0..32768) -> уровень смещения
-      level = Math.max(0, Math.min(1, rms / 8000)); // подстройте масштаб под ваши данные
+      level = Math.max(0, Math.min(1, rms / 8000)) * 100;
     } else {
       level = 0;
     }
 
-    // Обновление текста
-    if (typeof text === "string" && text.trim().length > 0) {
-      label.innerText = text;
-      lastTextTs = performance.now();
-      // Активная подсветка при наличии текста
-      if (!recording) {
-        // если пришёл текст, но UI не в режиме записи — подсветим
-        activateUIColors();
+    // Обновление цели печатной машинки: только рост, без отката
+    if (typeof text === "string") {
+      const incoming = text.trim();
+      // если пришло больше, чем уже показано — допечатываем
+      if (incoming.length > tw_shown.length) {
+        tw_target = incoming;
+        if (!tw_timer) typewriter_tick(); // гарантируем запуск печати
+        lastTextTs = performance.now();
+        if (!recording) activateUIColors();
+        recording = true;
+      } else if (incoming.length > 0) {
+        // пришёл такой же размер — просто обновим метку активности
+        lastTextTs = performance.now();
+        if (!recording) activateUIColors();
+        recording = true;
       }
-      recording = true;
     }
 
     // Анимация частиц от уровня
     animateParticlesFromLevel(level);
 
-    backoffFails = 0; // сброс неудач при успешном запросе
+    backoffFails = 0;
   } catch (e) {
-    // Ошибки сети/таймаут — мягкая обработка, можно добавить бэкофф
     backoffFails += 1;
   } finally {
-    // Проверка таймаута "нет текста 3 секунды"
     const since = performance.now() - lastTextTs;
     if (recording && since >= NO_TEXT_TIMEOUT_MS) {
-      stopPollingWithMicOffAnimation();
+      // Завершение записи: отключаем прослушивание и сбрасываем UI к заглушке
+      finishRecordingAndReset();
       return;
     }
   }
@@ -136,11 +142,11 @@ async function pollOnce() {
 
 function startPolling() {
   if (circPolling) return;
+  resetSession();           // начинаем «с нуля»
   circPolling = true;
   recording = true;
   lastTextTs = performance.now();
   activateUIColors();
-  // Частый опрос + requestAnimationFrame-анимация ниже
   pollTimerId = setInterval(pollOnce, POLL_INTERVAL_MS);
 }
 
@@ -155,10 +161,45 @@ function stopPolling() {
 
 function stopPollingWithMicOffAnimation() {
   stopPolling();
-  // Вернуть частицы к пассивной палитре и иконку микрофона
   deactivateUIColors();
-  // Плавно «успокоить» частицы (сброс level)
   level = 0;
+  for (let particle of particles) {
+    particle.style.transform = `translateY(${Math.sin(timer)}px) rotate(${timer * .05}rad)`;
+  }
+}
+
+// Полный сценарий завершения записи с возвратом заглушки
+function finishRecordingAndReset() {
+  stopPollingWithMicOffAnimation();
+  resetTypewriter("Задайте вопрос...");
+}
+
+// Сброс печатной машинки к заглушке
+function resetTypewriter(placeholder) {
+  if (tw_timer) {
+    clearTimeout(tw_timer);
+    tw_timer = null;
+  }
+  tw_target = String(placeholder ?? "");
+  tw_shown = "";
+  label.innerText = "";
+  typewriter_tick();
+}
+
+// Сброс сессии перед новым запуском записи
+function resetSession() {
+  // Сбрасываем печатную машинку и уровень
+  if (tw_timer) {
+    clearTimeout(tw_timer);
+    tw_timer = null;
+  }
+  tw_target = "";
+  tw_shown = "";
+  label.innerText = "";
+  level = 0;
+  lastTextTs = 0;
+  // Возвращаем начальную подсказку немедленно
+  typewriter_set("Задайте вопрос...");
 }
 
 // Визуальные состояния
@@ -182,9 +223,7 @@ function deactivateUIColors() {
 
 // Анимация свечения (дыхание)
 setInterval(() => {
-  if (boxShadow >= 25 || boxShadow <= 10) {
-    dir = -dir;
-  }
+  if (boxShadow >= 25 || boxShadow <= 10) dir = -dir;
   boxShadow += dir;
   depth += 0.00001 * dir;
 
@@ -209,42 +248,50 @@ setInterval(() => {
 
 // Перерисовка частиц от уровня
 function animateParticlesFromLevel(lvl) {
-  // lvl в диапазоне ~0..1; используем синус и чередуем направление
   let localdir = 1;
-  const dy = Math.sin(timer) + localdir * lvl * 6; // чувствительность
+  let dy = 0;
   for (let particle of particles) {
+    dy = Math.sin(timer) + localdir * (lvl + (Math.random() - 0.5) * 2) * 6;
     particle.style.transform = `translateY(${dy}px) rotate(${timer * .05}rad)`;
     localdir = -localdir;
   }
 }
 
-// Подсказочный текст печатной машинкой
-function type(text, element, speed) {
-  element.innerText = "";
-  let index = 0;
-  const intervalId = setInterval(() => {
-    if (text.length > index) {
-      element.innerHTML += text[index];
-      index += 1;
-    } else {
-      clearInterval(intervalId);
-    }
-  }, speed);
+// Печатная машинка: API
+function typewriter_set(text) {
+  // Полная установка цели (используется для показа заглушки)
+  tw_target = String(text ?? "");
+  tw_shown = "";
+  label.innerText = "";
+  if (tw_timer) {
+    clearTimeout(tw_timer);
+    tw_timer = null;
+  }
+  typewriter_tick();
+}
+
+function typewriter_tick() {
+  if (tw_shown.length < tw_target.length) {
+    tw_shown = tw_target.slice(0, tw_shown.length + 1);
+    label.innerText = tw_shown;
+    tw_timer = setTimeout(typewriter_tick, TYPE_SPEED_MS);
+    return;
+  }
+  if (tw_timer) {
+    clearTimeout(tw_timer);
+    tw_timer = null;
+  }
 }
 
 // Ховеры круга
-circ_out.onmouseover = () => {
-  scaled = true;
-};
-circ_out.onmouseleave = () => {
-  scaled = false;
-};
+circ_out.onmouseover = () => { scaled = true; };
+circ_out.onmouseleave = () => { scaled = false; };
 
 // Клик по кругу: старт/стоп опроса эндпоинта
 circ_out.onclick = () => {
   if (!circPolling) {
-    startPolling();
+    startPolling();          // старт новой сессии: заглушка показана, затем поступают partial’ы
   } else {
-    stopPollingWithMicOffAnimation();
+    finishRecordingAndReset(); // явное завершение: остановиться и вернуть заглушку
   }
 };

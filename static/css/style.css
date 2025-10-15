@@ -37,7 +37,7 @@ body {
     position: absolute;
     border-radius: 50%;
     box-shadow: 0 0 5px hsl(0, 0%, 100%);
-    transition: filter .05s, background .3s;
+    transition: transform .5s, filter .05s, background .3s;
 }
 
 #circ {
@@ -58,6 +58,7 @@ body {
     font-weight: bold;
     font-style: normal;
     margin-top: 30px;
+    text-align: center;
 }
 
 .circ_outer {
