@@ -59,6 +59,7 @@ function enableResize(element, side) {
         function onMouseMove(e) {
             if (side === "right") {
                 const newWidth = startWidth + (e.clientX - startX);
+                console.log(e.clientX - startX)
                 element.style.width = Math.max(newWidth, 20) + "px";
             } else if (side === "left") {
                 const newWidth = startWidth - (e.clientX - startX);

@@ -46,9 +46,9 @@ body {
 
 .slide_to_chat {
     width: 40px;
-    height: 40px;
+    height: 60px;
     position: absolute;
-    bottom: 20px;
+    bottom: 0px;
     left: 50%;
     transform: translateX(-50%);
 }
@@ -115,13 +115,15 @@ body {
 
 .chats {
     width: max-content;
+    max-width: 300px;
+    position: relative;
     height: 100vh;
     background-color: #f8f8f8;
     border-right: solid 1px rgb(213, 213, 213);
     text-overflow: ellipsis;
-    overflow: hidden;
+    overflow: visible;
     min-width: 60px;
-    max-width: 300px;
+    flex-shrink: 0
 }
 
 .chats .chat {
@@ -233,4 +235,17 @@ body {
     border: none;
     box-shadow: 0 0 2px var(--main-theme-color);
     margin: 5px;
+}
+
+.message {
+    border-radius: 10px;
+    padding: 5px;
+    box-shadow: 0 0 2px #1c2738;
+    width: max-content;
+    margin: 5px;
+}
+
+.my {
+    background-color: #1c2738;
+    color: white
 }
