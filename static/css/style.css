@@ -3,7 +3,7 @@
 
 :root {
     --index: calc(1vw + 1vh);
-    --main-theme-color: rgb(28, 39, 56); 
+    --main-theme-color: #1c2738; 
 }
 
 * {
@@ -18,16 +18,46 @@ body {
 }
 
 .container {
-    position: relative;
+    position: absolute;
     display: flex;
-    background-color: var(--main-theme-color);
     align-items: center;
     justify-content: center;
     min-height: 100vh;
     flex-direction: column;
     color: rgb(226, 226, 226);
     font-style: italic;
-    font-size: calc(1.2 * var(--index));
+    font-size: 15px;
+    width: 100vw;
+    height: 100vh;
+    transition: transform 0.2s ease-in-out
+}
+
+#index_c1 {
+    z-index: 10;
+    background-color: var(--main-theme-color);
+}
+
+#index_c2 {
+    z-index: 9;
+    color: rgb(43, 43, 43);
+     display: block;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.slide_to_chat {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.slide_to_chat img {
+    width: 100%;
+    filter: invert(1);
+    transform: rotate(90deg)
 }
 
 .particle {
@@ -82,4 +112,68 @@ body {
 .mic_img {
     filter: invert(1);
     width: 100%;
+}
+
+.chats {
+    width: max-content;
+    height: 100vh;
+    background-color: rgb(247, 247, 247);
+    border-right: solid 1px rgb(175, 175, 175);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    min-width: 60px;
+    max-width: 300px;
+}
+
+.chats .chat {
+    padding: 15px 10px;
+    width: 100%;
+    min-width: 100px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    border: solid 1px rgb(225, 225, 225);
+    background-color: rgb(241, 241, 241);
+    transition: background-color .2s ease-in-out;
+}
+
+.chats .active_chat {
+    background-color: #c6d2e7;
+}
+
+.chats .chat p {
+    width: 200px
+}
+
+.chats .chat .chat_image {
+    min-width: 40px;
+    min-height: 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+.chats .chat .chat_image img {
+    width: 100%;
+}
+
+.chat_label {
+    font-weight: bolder;
+    font-size: 17px;
+    color: #434343;
+    width: 100%;
+    white-space: nowrap;
+
+}
+
+.chat_cont {
+    color: #797979;
+    font-weight: light;
+    font-size: 13px;
+    width: 150px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }

@@ -5,10 +5,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/static/css/style.css">
         <script src="/static/js/particles.js" type="module" defer></script>
+        <script src="/static/js/animations.js" type="module" defer></script>
+        <script src="/static/js/resize.js" type="module" defer></script>
         <title>Start with AEngineApps!</title>
     </head>
     <body>
-        <div class="container">
+        <div class="container" id="index_c1">
             <div class="circ_outer">
                 <div id="circ"></div>   
                 <div class="mic">
@@ -16,6 +18,49 @@
                 </div>
             </div> 
             <h1 class="label"></h1>
+            <div class="slide_to_chat">
+                <img src="/static/imgs/arrow.png" alt="">
+            </div>
+        </div>
+        <div class="container" id="index_c2">
+            <div class="chats">
+                <div class="chat active_chat">
+                    <div class="chat_image">
+                        <img src="https://ui-avatars.com/api/?background=1C2738&color=fff&name=1" alt="">
+                    </div>
+                    <div class="chat_text">
+                        <p class="chat_label">Первый чат в ANEX</p>
+                        <p class="chat_cont">Почему диван стоит 75000 рублей?</p>
+                    </div>
+                </div>
+                <div class="chat">
+                    <div class="chat_image">
+                        <img src="https://ui-avatars.com/api/?background=1C2738&color=fff&name=2" alt="">
+                    </div>
+                    <div class="chat_text">
+                        <p class="chat_label">Первый чат в ANEX</p>
+                        <p class="chat_cont">Почему диван стоит 75000 рублей?</p>
+                    </div>
+                </div>
+                <div class="chat">
+                    <div class="chat_image">
+                        <img src="https://ui-avatars.com/api/?background=1C2738&color=fff&name=3" alt="">
+                    </div>
+                    <div class="chat_text">
+                        <p class="chat_label">Первый чат в ANEX</p>
+                        <p class="chat_cont">Почему диван стоит 75000 рублей?</p>
+                    </div>
+                </div>
+                <div class="chat">
+                    <div class="chat_image">
+                        <img src="https://ui-avatars.com/api/?background=1C2738&color=fff&name=4" alt="">
+                    </div>
+                    <div class="chat_text">
+                        <p class="chat_label">Первый чат в ANEX</p>
+                        <p class="chat_cont">Почему диван стоит 75000 рублей?</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
 </html>

@@ -35,7 +35,7 @@ if (!label) {
 // Геометрия круга/частиц
 circ.style.width = `${radius*2}px`;
 circ.style.height = `${radius*2}px`;
-if (mic) mic.style.transform = `translateY(${particle/2}px)`;
+if (mic) mic.style.transform = `translate(${particle/2}px, ${particle/3}px)`;
 
 for (let y = -radius; y <= radius; y += particle + offset) {
   for (let x = -radius; x <= radius; x += particle + offset) {
