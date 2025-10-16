@@ -40,9 +40,8 @@ body {
 #index_c2 {
     z-index: 9;
     color: rgb(43, 43, 43);
-     display: block;
-    align-items: flex-start;
-    justify-content: flex-start;
+    display: flex;
+    flex-direction: row;
 }
 
 .slide_to_chat {
@@ -117,8 +116,8 @@ body {
 .chats {
     width: max-content;
     height: 100vh;
-    background-color: rgb(247, 247, 247);
-    border-right: solid 1px rgb(175, 175, 175);
+    background-color: #f8f8f8;
+    border-right: solid 1px rgb(213, 213, 213);
     text-overflow: ellipsis;
     overflow: hidden;
     min-width: 60px;
@@ -134,7 +133,8 @@ body {
     align-items: center;
     border: solid 1px rgb(225, 225, 225);
     background-color: rgb(241, 241, 241);
-    transition: background-color .2s ease-in-out;
+    transition: background-color .1s ease-in-out;
+    text-overflow: ellipsis;
 }
 
 .chats .active_chat {
@@ -165,7 +165,8 @@ body {
     color: #434343;
     width: 100%;
     white-space: nowrap;
-
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .chat_cont {
@@ -176,4 +177,60 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+
+.messenger {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-color: #fcfcfc;
+}
+
+.messages {
+    width: 100%;
+    height: 100%;
+    background-color: #fefefe;;
+    border-radius: 10px;
+    padding: 5px
+}
+
+.bottom {
+    padding: 10px;
+    height: 50px;
+    width: 100%;
+    background-color: white;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sendbutton {
+    background-color: var(--main-theme-color);
+    border-radius: 50%;
+    width: 35px;
+    height: fit-content;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sendbutton img {
+    width: 100%;
+    filter: invert(1);
+}
+
+.text_input {
+    padding: 5px;
+    border-radius: 10px;
+    height: 100%;
+    width: 100%;
+    color: rgb(84, 84, 84);
+    border: none;
+    box-shadow: 0 0 2px var(--main-theme-color);
+    margin: 5px;
 }
