@@ -1,7 +1,7 @@
 // Параметры визуализации
 let radius = 120,
     particle = 10,
-    offset = 2,
+    offset = 5,
     boxShadow = 20,
     depth = 0.1,
     dir = 1,
@@ -35,7 +35,7 @@ if (!label) {
 // Геометрия круга/частиц
 circ.style.width = `${radius*2}px`;
 circ.style.height = `${radius*2}px`;
-if (mic) mic.style.transform = `translate(${particle/2}px, ${particle/3}px)`;
+if (mic) mic.style.transform = `translate(${particle/2}px, ${particle/2}px)`;
 
 for (let y = -radius; y <= radius; y += particle + offset) {
   for (let x = -radius; x <= radius; x += particle + offset) {
@@ -210,6 +210,18 @@ function activateUIColors() {
     particle.style.backgroundColor = `${onactive}`;
   }
 }
+
+setInterval(
+  () => {
+    for (let part of document.querySelectorAll(".particle")) {
+      let delta = Math.sqrt((Number.parseInt(part.style.left) - radius) ** 2 + (Number.parseInt(part.style.top) - radius) ** 2);
+      part.style.transform = `scale(${0.6 + Math.sin(particle - delta * decreaser)/3})`;
+    }
+    decreaser += .005
+    console.log(decreaser)
+  },
+  200
+)
 
 function deactivateUIColors() {
   shadowCol = "#ffffff";
