@@ -217,7 +217,7 @@ setInterval(
       let delta = Math.sqrt((Number.parseInt(part.style.left) - radius) ** 2 + (Number.parseInt(part.style.top) - radius) ** 2);
       part.style.transform = `scale(${0.6 + Math.sin(particle - delta * decreaser)/3})`;
     }
-    decreaser += .005
+    decreaser += .01
     console.log(decreaser)
   },
   200
